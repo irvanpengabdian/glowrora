@@ -13,6 +13,8 @@ export type PublicJsonWallTestimonial = {
 export type PublicJsonWallPayload = {
   campaignName: string;
   campaignDescription: string | null;
+  /** Collection slug for `/collect/...` (stable even when wall uses a vanity slug). */
+  collectPublicSlug: string;
   testimonials: PublicJsonWallTestimonial[];
 };
 
@@ -37,13 +39,13 @@ export type PublicTestimonialsJsonV1 = {
 };
 
 export function buildPublicTestimonialsJsonV1(
-  slug: string,
+  _requestedSlug: string,
   wall: PublicJsonWallPayload,
 ): PublicTestimonialsJsonV1 {
   return {
     version: 1,
     campaign: {
-      slug,
+      slug: wall.collectPublicSlug,
       name: wall.campaignName,
       description: wall.campaignDescription,
     },

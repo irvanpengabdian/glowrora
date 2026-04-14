@@ -3,7 +3,7 @@ import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { WallCard, type WallCardModel } from "@/components/walls/wall-card";
 import { WallStatsBar } from "@/components/walls/wall-stats-bar";
-import { campaigns, getDb, testimonials } from "@/db";
+import { getDb, testimonials } from "@/db";
 import { getAppOrigin } from "@/lib/site-url";
 import { listCampaignsForUser } from "@/server/campaigns";
 import { ensureDbUserId } from "@/server/users";
@@ -60,13 +60,15 @@ export default async function WallSettingsPage() {
   const totalViews = 0; // MVP: view tracking coming soon
 
   const wallCards: WallCardModel[] = campaigns.map((c) => {
-    const wallUrl = origin ? `${origin}/love/${c.publicSlug}` : `/love/${c.publicSlug}`;
+    const loveSlug = c.wallPublicSlug ?? c.publicSlug;
+    const wallUrl = origin ? `${origin}/love/${loveSlug}` : `/love/${loveSlug}`;
     const approved = approvedMap.get(c.id)?.n ?? 0;
     const isLive = Boolean(c.isActive) && approved > 0;
     return {
       id: c.id,
       name: c.name,
-      publicSlug: c.publicSlug,
+      collectSlug: c.publicSlug,
+      wallPathSlug: loveSlug,
       isLive,
       approvedCount: approved,
       views: 0,

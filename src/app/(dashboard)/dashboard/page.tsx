@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { sql } from "drizzle-orm";
 
-import { getDb } from "@/db";
 import {
   countCampaignsForUser,
   getTestimonialOverviewForUser,
@@ -49,17 +47,6 @@ function StatCard({ label, value, hint, href }: StatCardProps) {
 }
 
 export default async function DashboardOverviewPage() {
-  let dbStatus: "connected" | "error" = "connected";
-  let dbMessage = "Neon responded OK.";
-
-  try {
-    await getDb().execute(sql`select 1`);
-  } catch (e) {
-    dbStatus = "error";
-    dbMessage =
-      e instanceof Error ? e.message : "Could not reach the database.";
-  }
-
   const userId = await ensureDbUserId();
   const stats = await getTestimonialOverviewForUser(userId);
   const campaignCount = await countCampaignsForUser(userId);
@@ -121,17 +108,6 @@ export default async function DashboardOverviewPage() {
         <Link href="/embed" className="tf-btn-outline text-sm">
           Embed widget
         </Link>
-      </div>
-
-      <div className="tf-card">
-        <h2 className="text-sm font-semibold text-primary-container">
-          Database
-        </h2>
-        <p
-          className={`mt-2 text-sm ${dbStatus === "connected" ? "text-secondary" : "text-on-error-container"}`}
-        >
-          {dbStatus === "connected" ? "Connected" : "Error"}: {dbMessage}
-        </p>
       </div>
     </div>
   );

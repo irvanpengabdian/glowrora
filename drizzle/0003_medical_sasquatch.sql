@@ -1,0 +1,2 @@
+ALTER TABLE "campaigns" ADD COLUMN "wall_public_slug" text;--> statement-breakpoint
+CREATE UNIQUE INDEX "campaigns_wall_public_slug_unique" ON "campaigns" USING btree ("wall_public_slug") WHERE "campaigns"."wall_public_slug" is not null;

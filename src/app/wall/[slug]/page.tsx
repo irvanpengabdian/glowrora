@@ -42,7 +42,10 @@ export default async function PublicWallPage({ params }: Props) {
           >
             Glowrora
           </Link>
-          <Link href={`/collect/${slug}`} className="tf-btn-secondary text-sm">
+          <Link
+            href={`/collect/${wall.collectPublicSlug}`}
+            className="tf-btn-secondary text-sm"
+          >
             Submit a testimonial
           </Link>
         </div>
@@ -95,7 +98,7 @@ export default async function PublicWallPage({ params }: Props) {
               the collection link so more people can contribute.
             </p>
             <Link
-              href={`/collect/${slug}`}
+              href={`/collect/${wall.collectPublicSlug}`}
               className="mt-6 inline-flex text-sm font-semibold text-secondary underline-offset-4 hover:underline"
             >
               Submit the first testimonial →
@@ -116,7 +119,7 @@ export default async function PublicWallPage({ params }: Props) {
             Want to share your own story?
           </h2>
           <Link
-            href={`/collect/${slug}`}
+            href={`/collect/${wall.collectPublicSlug}`}
             className="mt-7 inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 font-headline text-base font-bold text-on-secondary shadow-sm transition hover:opacity-90"
           >
             Submit a Testimonial

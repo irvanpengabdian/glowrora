@@ -6,8 +6,12 @@ import { CampaignDefaultQuestions } from "@/components/campaigns/campaign-defaul
 import { CopyCollectionLink } from "@/components/campaigns/copy-collection-link";
 import { RestoreCampaignForm } from "@/components/campaigns/restore-campaign-form";
 import { getAppOrigin } from "@/lib/site-url";
+import type { CustomQuestion } from "@/lib/validations/custom-questions";
 import { getOwnedCampaign } from "@/server/campaigns";
+import { getUserPlanEntitlement } from "@/server/plan";
 import { ensureDbUserId } from "@/server/users";
+
+import { WallSlugForm } from "./wall-slug-form";
 
 import { CampaignEditForm } from "./campaign-edit-form";
 import { CustomQuestionsEditor } from "./custom-questions-editor";
@@ -25,18 +29,18 @@ export default async function CampaignDetailPage({ params }: Props) {
     notFound();
   }
 
+  const plan = await getUserPlanEntitlement(userId);
+  const lovePathSlug = campaign.wallPublicSlug ?? campaign.publicSlug;
+
   const origin = await getAppOrigin();
   const collectionUrl = origin
     ? `${origin}/collect/${campaign.publicSlug}`
     : `/collect/${campaign.publicSlug}`;
   const wallUrl = origin
-    ? `${origin}/love/${campaign.publicSlug}`
-    : `/love/${campaign.publicSlug}`;
+    ? `${origin}/love/${lovePathSlug}`
+    : `/love/${lovePathSlug}`;
 
   const formKey = campaign.updatedAt.toISOString();
-  const previewLine =
-    campaign.description?.trim().slice(0, 120) ??
-    "Share what went well working with us.";
 
   return (
     <div className="space-y-10">
@@ -85,7 +89,9 @@ export default async function CampaignDetailPage({ params }: Props) {
           <CustomQuestionsEditor
             campaignId={campaign.id}
             campaignName={campaign.name}
-            initialQuestions={(campaign.customQuestions ?? []) as any}
+            initialQuestions={
+              (campaign.customQuestions ?? []) as CustomQuestion[]
+            }
           />
 
           <section className="rounded-xl border border-outline-variant/15 bg-surface-container-lowest p-6 tf-editorial-shadow md:p-8">
@@ -120,9 +126,27 @@ export default async function CampaignDetailPage({ params }: Props) {
             </h2>
             <p className="mb-6 text-sm text-on-surface-variant">
               Public page showing approved testimonials only — safe to share after
-              you moderate submissions.
+              you moderate submissions. Collection submissions always use{" "}
+              <code className="rounded bg-surface-container px-1 text-xs">
+                /collect/{campaign.publicSlug}
+              </code>
+              .
             </p>
             <CopyCollectionLink collectionUrl={wallUrl} />
+            <div className="mt-8 border-t border-outline-variant/15 pt-8">
+              <h3 className="font-headline text-sm font-bold text-primary">
+                Custom wall URL (Pro)
+              </h3>
+              <div className="mt-4">
+                <WallSlugForm
+                  key={`${campaign.id}-${campaign.wallPublicSlug ?? ""}-${campaign.updatedAt.toISOString()}`}
+                  campaignId={campaign.id}
+                  defaultWallSlug={campaign.wallPublicSlug ?? ""}
+                  collectSlug={campaign.publicSlug}
+                  canCustomizeWall={plan.hasActivePro}
+                />
+              </div>
+            </div>
           </section>
 
           <section className="rounded-2xl border border-error-container/40 bg-error-container/15 p-6 md:p-8">

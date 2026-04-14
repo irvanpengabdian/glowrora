@@ -60,6 +60,11 @@ export const campaigns = pgTable(
     name: text("name").notNull(),
     description: text("description"),
     publicSlug: text("public_slug").notNull(),
+    /**
+     * Optional vanity path for `/love/[slug]` (Pro). Collection stays `/collect/[publicSlug]`.
+     * Globally unique among non-null values; must not collide with any `public_slug`.
+     */
+    wallPublicSlug: text("wall_public_slug"),
     collectionMode: collectionModeEnum("collection_mode")
       .notNull()
       .default("text_and_video"),
@@ -81,6 +86,9 @@ export const campaigns = pgTable(
   },
   (t) => [
     uniqueIndex("campaigns_public_slug_unique").on(t.publicSlug),
+    uniqueIndex("campaigns_wall_public_slug_unique")
+      .on(t.wallPublicSlug)
+      .where(sql`${t.wallPublicSlug} is not null`),
     index("campaigns_user_id_idx").on(t.userId),
     index("campaigns_user_id_created_at_idx").on(t.userId, t.createdAt),
     index("campaigns_user_id_archived_at_idx").on(t.userId, t.archivedAt),

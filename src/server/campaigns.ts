@@ -6,6 +6,7 @@ import {
   inArray,
   isNotNull,
   isNull,
+  or,
   sql,
 } from "drizzle-orm";
 import { customAlphabet } from "nanoid";
@@ -130,14 +131,49 @@ export async function getOwnedCampaign(
 export async function getPublicCampaignBySlug(
   publicSlug: string,
 ): Promise<CampaignRow | null> {
+  const trimmed = publicSlug.trim();
+  if (!trimmed) return null;
   const db = getDb();
   const rows = await db
     .select()
     .from(campaigns)
     .where(
-      and(eq(campaigns.publicSlug, publicSlug), isNull(campaigns.deletedAt)),
+      and(eq(campaigns.publicSlug, trimmed), isNull(campaigns.deletedAt)),
     )
     .limit(1);
+  return rows[0] ?? null;
+}
+
+/**
+ * Resolves a campaign for Wall of Love / public testimonials JSON.
+ * Matches `wall_public_slug` or `public_slug` (collect slug always works for `/love/`).
+ */
+export async function resolveCampaignForPublicWallSlug(
+  slug: string,
+): Promise<CampaignRow | null> {
+  const trimmed = slug.trim();
+  if (!trimmed) return null;
+  const db = getDb();
+  const rows = await db
+    .select()
+    .from(campaigns)
+    .where(
+      and(
+        isNull(campaigns.deletedAt),
+        or(
+          eq(campaigns.wallPublicSlug, trimmed),
+          eq(campaigns.publicSlug, trimmed),
+        ),
+      ),
+    )
+    .limit(2);
+  if (rows.length === 0) return null;
+  if (rows.length > 1) {
+    console.error(
+      "[resolveCampaignForPublicWallSlug] ambiguous slug",
+      trimmed,
+    );
+  }
   return rows[0] ?? null;
 }
 

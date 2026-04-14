@@ -4,15 +4,16 @@ import { buildPublicTestimonialsJsonV1 } from "./public-testimonials-json";
 
 describe("buildPublicTestimonialsJsonV1", () => {
   it("builds v1 payload with empty testimonials", () => {
-    const out = buildPublicTestimonialsJsonV1("my-slug", {
+    const out = buildPublicTestimonialsJsonV1("vanity-wall", {
       campaignName: "Acme",
       campaignDescription: "Hello",
+      collectPublicSlug: "collect-abc",
       testimonials: [],
     });
     expect(out).toEqual({
       version: 1,
       campaign: {
-        slug: "my-slug",
+        slug: "collect-abc",
         name: "Acme",
         description: "Hello",
       },
@@ -24,6 +25,7 @@ describe("buildPublicTestimonialsJsonV1", () => {
     const out = buildPublicTestimonialsJsonV1("s", {
       campaignName: "C",
       campaignDescription: null,
+      collectPublicSlug: "s",
       testimonials: [
         {
           id: "t1",

@@ -1,13 +1,12 @@
-import { revalidatePath } from "next/cache";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
-import { campaigns, getDb, testimonials } from "@/db";
+import { getDb, testimonials } from "@/db";
 import { publicUrlForR2ObjectKey } from "@/lib/r2/public-url";
 import type {
   PublicJsonWallPayload,
   PublicJsonWallTestimonial,
 } from "@/lib/public-testimonials-json";
-import { getPublicCampaignBySlug } from "@/server/campaigns";
+import { resolveCampaignForPublicWallSlug } from "@/server/campaigns";
 
 export type PublicWallTestimonial = PublicJsonWallTestimonial;
 export type PublicWallPayload = PublicJsonWallPayload;
@@ -17,14 +16,20 @@ export type {
 } from "@/lib/public-testimonials-json";
 export { buildPublicTestimonialsJsonV1 } from "@/lib/public-testimonials-json";
 
+export {
+  revalidateWallPathSlugsList,
+  revalidateWallPathsForCampaignIds,
+  revalidateWallPathsForTestimonialIds,
+  urlSlugsForWallRoutes,
+} from "@/server/wall-revalidate";
+
 /**
- * Resolves a campaign by `public_slug` and returns approved testimonials only.
- * Returns `null` if the campaign does not exist or is soft-deleted.
+ * Resolves Wall of Love by vanity `wall_public_slug` or by collection `public_slug`.
  */
 export async function getPublicWallBySlug(
-  publicSlug: string,
+  slug: string,
 ): Promise<PublicWallPayload | null> {
-  const campaign = await getPublicCampaignBySlug(publicSlug.trim());
+  const campaign = await resolveCampaignForPublicWallSlug(slug);
   if (!campaign) return null;
 
   const db = getDb();
@@ -65,37 +70,7 @@ export async function getPublicWallBySlug(
   return {
     campaignName: campaign.name,
     campaignDescription: campaign.description,
+    collectPublicSlug: campaign.publicSlug,
     testimonials: list,
   };
-}
-
-/** Busts the cache for every `/wall/[slug]` and `/love/[slug]` tied to the given campaigns. */
-export async function revalidateWallPathsForCampaignIds(
-  campaignIds: string[],
-): Promise<void> {
-  const unique = [...new Set(campaignIds)].filter(Boolean);
-  if (unique.length === 0) return;
-  const db = getDb();
-  const rows = await db
-    .select({ publicSlug: campaigns.publicSlug })
-    .from(campaigns)
-    .where(inArray(campaigns.id, unique));
-  for (const { publicSlug } of rows) {
-    revalidatePath(`/wall/${publicSlug}`);
-    revalidatePath(`/love/${publicSlug}`);
-    revalidatePath(`/api/public/campaigns/${publicSlug}/testimonials`);
-  }
-}
-
-export async function revalidateWallPathsForTestimonialIds(
-  testimonialIds: string[],
-): Promise<void> {
-  if (testimonialIds.length === 0) return;
-  const db = getDb();
-  const rows = await db
-    .select({ campaignId: testimonials.campaignId })
-    .from(testimonials)
-    .where(inArray(testimonials.id, testimonialIds))
-    .groupBy(testimonials.campaignId);
-  await revalidateWallPathsForCampaignIds(rows.map((r) => r.campaignId));
 }

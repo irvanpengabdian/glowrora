@@ -8,7 +8,10 @@ import { CopyCollectionLink } from "@/components/campaigns/copy-collection-link"
 export type WallCardModel = {
   id: string;
   name: string;
-  publicSlug: string;
+  /** Collection slug (`/collect/...`). */
+  collectSlug: string;
+  /** Path segment for `/love/...` (vanity wall slug or collect slug). */
+  wallPathSlug: string;
   isLive: boolean;
   approvedCount: number;
   views: number;
@@ -105,16 +108,25 @@ export function WallCard({ model }: { model: WallCardModel }) {
             <StatusBadge live={model.isLive} />
           </div>
           <p className="mt-2 text-xs text-on-surface-variant">
-            Wall slug{" "}
+            Wall{" "}
             <code className="rounded bg-surface-container px-1.5 py-0.5 text-[11px] text-primary-container">
-              {model.publicSlug}
+              {model.wallPathSlug}
             </code>
+            {model.wallPathSlug !== model.collectSlug ? (
+              <>
+                {" "}
+                · Collect{" "}
+                <code className="rounded bg-surface-container px-1.5 py-0.5 text-[11px] text-primary-container">
+                  {model.collectSlug}
+                </code>
+              </>
+            ) : null}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href={`/love/${model.publicSlug}`}
+            href={`/love/${model.wallPathSlug}`}
             className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-on-secondary shadow-sm transition hover:opacity-90"
           >
             <ExternalLink className="size-4" />
