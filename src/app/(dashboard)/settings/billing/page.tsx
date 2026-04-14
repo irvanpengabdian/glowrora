@@ -54,10 +54,6 @@ export default function SettingsBillingPage() {
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-on-surface-variant">
-          We will add Stripe/Midtrans checkout and invoices in a follow-up
-          sprint.
-        </p>
       </section>
     </div>
   );

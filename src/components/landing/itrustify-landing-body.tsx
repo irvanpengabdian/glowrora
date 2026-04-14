@@ -335,7 +335,7 @@ export function ItrustifyLandingBody({ toggleFaq }: BodyProps) {
         <div className="popular-badge" data-lang="id">Paling Populer</div>
         <div className="popular-badge" data-lang="en">Most Popular</div>
         <div className="plan-name">Pro</div>
-        <div className="plan-price">Rp149k <span data-lang="id">/ bulan</span><span data-lang="en">/ month</span></div>
+        <div className="plan-price">Rp99k <span data-lang="id">/ bulan</span><span data-lang="en">/ month</span></div>
         <p className="plan-desc" data-lang="id">Untuk solopreneur dan SaaS founder serius yang ingin hasil maksimal dari social proof.</p>
         <p className="plan-desc" data-lang="en">For serious solopreneurs and SaaS founders who want maximum results from social proof.</p>
         <ul className="plan-features">
@@ -353,7 +353,7 @@ export function ItrustifyLandingBody({ toggleFaq }: BodyProps) {
       <div className="pricing-card reveal reveal-delay-2">
         <div className="plan-name" data-lang="id">Agensi</div>
         <div className="plan-name" data-lang="en">Agency</div>
-        <div className="plan-price">Rp399k <span data-lang="id">/ bulan</span><span data-lang="en">/ month</span></div>
+        <div className="plan-price">Rp299k <span data-lang="id">/ bulan</span><span data-lang="en">/ month</span></div>
         <p className="plan-desc" data-lang="id">Untuk agensi yang mengelola social proof untuk banyak klien sekaligus.</p>
         <p className="plan-desc" data-lang="en">For agencies managing social proof across multiple clients at once.</p>
         <ul className="plan-features">
