@@ -15,11 +15,11 @@ export function ItrustifyLandingBody({ toggleFaq }: BodyProps) {
   <div className="hero-bg-circle hero-bg-circle-2"></div>
   <div className="hero-badge">
     <span className="hero-badge-dot"></span>
-    <span data-lang="id">Tanpa coding. Tanpa registrasi klien. Langsung jalan.</span>
-    <span data-lang="en">No coding. No client sign-up. Works instantly.</span>
+    <span data-lang="id">Cara termudah membangun kepercayaan secara digital</span>
+    <span data-lang="en">The easiest way to build trust digitally</span>
   </div>
-  <h1 data-lang="id">Testimoni autentik<br />adalah senjata<br />penjualan <em>terkuat</em> kamu.</h1>
-  <h1 data-lang="en">Authentic testimonials<br />are your most powerful<br /><em>sales weapon.</em></h1>
+  <h1 data-lang="id">Kepercayaan Publik<br />Dimulai dari Testimoni Autentik</h1>
+  <h1 data-lang="en">Public Trust Starts with<br />Authentic Testimonials</h1>
   <p className="hero-sub" data-lang="id">Glowrora membantu kamu mengumpulkan teks &amp; video testimonial dari klien dalam hitungan menit — lalu tampilkan sebagai social proof elegan di website manapun.</p>
   <p className="hero-sub" data-lang="en">Glowrora helps you collect text &amp; video testimonials from clients in minutes — then display them as elegant social proof on any website.</p>
   <div className="hero-cta-row">
