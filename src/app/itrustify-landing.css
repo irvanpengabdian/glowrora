@@ -15,10 +15,9 @@ html {
 :scope {font-family:var(--font-jakarta),ui-sans-serif,sans-serif;background:var(--cream);color:var(--body-text);line-height:1.6;overflow-x:hidden;}
 :scope::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:0;}
 
-/* LANG */
-[data-lang="en"]{display:none;}
-:scope.lang-en [data-lang="id"]{display:none;}
-:scope.lang-en [data-lang="en"]{display:revert;}
+/* LANG — hide rules must beat .btn-primary / .btn-plan / .btn-secondary (same specificity as [data-lang] alone, but those rules appear later in this file). */
+:scope:not(.lang-en) [data-lang="en"]{display:none !important;}
+:scope.lang-en [data-lang="id"]{display:none !important;}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:rgba(253,251,248,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:.5px solid var(--stone);transition:box-shadow .3s;}
