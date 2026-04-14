@@ -12,6 +12,7 @@ import { isR2Configured } from "@/lib/r2/env";
 import { presignVideoPut } from "@/lib/r2/client";
 import { buildVideoObjectKey } from "@/lib/r2/video-key";
 import { getPublicCampaignBySlug } from "@/server/campaigns";
+import { getUserPlanEntitlement } from "@/server/plan";
 
 export const runtime = "nodejs";
 
@@ -83,7 +84,10 @@ export async function POST(req: Request, ctx: RouteCtx) {
       { status: 403 },
     );
   }
-  if (campaign.collectionMode !== "text_and_video") {
+  const entitlement = await getUserPlanEntitlement(campaign.userId);
+  const allowVideo =
+    entitlement.hasActivePro && campaign.collectionMode === "text_and_video";
+  if (!allowVideo) {
     return NextResponse.json(
       { error: "This campaign does not accept video." },
       { status: 403 },

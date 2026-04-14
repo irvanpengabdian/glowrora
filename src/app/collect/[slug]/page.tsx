@@ -1,7 +1,16 @@
 import { notFound } from "next/navigation";
 
+import {
+  FREE_PLAN_TESTIMONIAL_LIMIT,
+  effectiveCollectionModeForCollect,
+} from "@/lib/plan";
 import { isR2Configured } from "@/lib/r2/env";
+import type { CustomQuestion } from "@/lib/validations/custom-questions";
 import { getPublicCampaignBySlug } from "@/server/campaigns";
+import {
+  countNonRejectedTestimonialsForUser,
+  getUserPlanEntitlement,
+} from "@/server/plan";
 
 import { CollectForm } from "./collect-form";
 
@@ -51,6 +60,37 @@ export default async function CollectPage({ params }: Props) {
     );
   }
 
+  const ownerPlan = await getUserPlanEntitlement(campaign.userId);
+  const collectionMode = effectiveCollectionModeForCollect(
+    campaign.collectionMode,
+    ownerPlan.hasActivePro,
+  );
+  const testimonialCount = await countNonRejectedTestimonialsForUser(
+    campaign.userId,
+  );
+  const atCapacity =
+    !ownerPlan.hasActivePro &&
+    testimonialCount >= FREE_PLAN_TESTIMONIAL_LIMIT;
+
+  if (atCapacity) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <p className="text-sm font-medium text-on-surface-variant">
+          Collection full
+        </p>
+        <h1 className="mt-2 font-headline text-2xl font-bold text-primary-container">
+          No new testimonials right now
+        </h1>
+        <p className="mt-4 text-sm text-on-surface-variant">
+          This workspace has reached the Free plan limit (
+          {FREE_PLAN_TESTIMONIAL_LIMIT} stories). Please contact the owner of{" "}
+          <span className="font-medium text-on-surface">{campaign.name}</span>{" "}
+          if you still want to share feedback.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-lg px-4 py-10 sm:py-16">
       <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-on-secondary-container">
@@ -59,8 +99,8 @@ export default async function CollectPage({ params }: Props) {
       <CollectForm
         slug={slug}
         campaignName={campaign.name}
-        collectionMode={campaign.collectionMode}
-        customQuestions={(campaign.customQuestions ?? []) as any}
+        collectionMode={collectionMode}
+        customQuestions={(campaign.customQuestions ?? []) as CustomQuestion[]}
         uploadsReady={isR2Configured()}
       />
     </div>

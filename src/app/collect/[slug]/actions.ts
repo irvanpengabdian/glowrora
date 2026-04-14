@@ -11,11 +11,16 @@ import { isR2Configured } from "@/lib/r2/env";
 import { headVideoObject } from "@/lib/r2/client";
 import { isVideoObjectKeyForCampaign } from "@/lib/r2/video-key";
 import { publicTestimonialSubmitSchema } from "@/lib/validations/testimonial-public";
+import { FREE_PLAN_TESTIMONIAL_LIMIT } from "@/lib/plan";
 import {
   customQuestionsSchema,
   validateAnswersForQuestions,
 } from "@/lib/validations/custom-questions";
 import { getPublicCampaignBySlug } from "@/server/campaigns";
+import {
+  countNonRejectedTestimonialsForUser,
+  getUserPlanEntitlement,
+} from "@/server/plan";
 
 export type CollectSubmitState =
   | null
@@ -67,6 +72,19 @@ export async function submitPublicTestimonialAction(
     };
   }
 
+  const ownerPlan = await getUserPlanEntitlement(campaign.userId);
+  if (!ownerPlan.hasActivePro) {
+    const existing = await countNonRejectedTestimonialsForUser(
+      campaign.userId,
+    );
+    if (existing >= FREE_PLAN_TESTIMONIAL_LIMIT) {
+      return {
+        error:
+          "This workspace has reached the testimonial limit for the Free plan. Please ask the owner to upgrade to Pro to accept more stories.",
+      };
+    }
+  }
+
   const h = await headers();
   const ip = getRequestIpFromHeaders(h) ?? "unknown";
   const rl = await rateLimitOrBypass({
@@ -110,7 +128,10 @@ export async function submitPublicTestimonialAction(
     if (!validated.ok) return { error: validated.error };
   }
 
-  if (hasVideo && campaign.collectionMode !== "text_and_video") {
+  const allowVideo =
+    ownerPlan.hasActivePro && campaign.collectionMode === "text_and_video";
+
+  if (hasVideo && !allowVideo) {
     return { error: "This campaign does not accept video testimonials." };
   }
 

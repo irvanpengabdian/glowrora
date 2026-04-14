@@ -16,6 +16,7 @@ import {
   normalizeQuestions,
   type CustomQuestion,
 } from "@/lib/validations/custom-questions";
+import { getUserPlanEntitlement } from "@/server/plan";
 
 const publicSlugAlphabet = customAlphabet(
   "0123456789abcdefghijklmnopqrstuvwxyz",
@@ -146,6 +147,10 @@ export async function createCampaignForUser(
 ): Promise<CampaignRow> {
   const db = getDb();
   const publicSlug = await generateUniquePublicSlug();
+  const entitlement = await getUserPlanEntitlement(userId);
+  const collectionMode = entitlement.hasActivePro
+    ? "text_and_video"
+    : "text_only";
   const [row] = await db
     .insert(campaigns)
     .values({
@@ -153,6 +158,7 @@ export async function createCampaignForUser(
       name: input.name,
       description: input.description?.trim() || null,
       publicSlug,
+      collectionMode,
     })
     .returning();
   return row;

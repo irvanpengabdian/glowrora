@@ -26,6 +26,9 @@ export const testimonialStatusEnum = pgEnum("testimonial_status", [
   "archived",
 ]);
 
+/** Billing / entitlements: `free` default; `pro` may be time-boxed via planExpiresAt. */
+export const planTierEnum = pgEnum("plan_tier", ["free", "pro"]);
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   clerkUserId: text("clerk_user_id").notNull().unique(),
@@ -33,6 +36,12 @@ export const users = pgTable("users", {
   displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
   businessName: text("business_name"),
+  planTier: planTierEnum("plan_tier").notNull().default("free"),
+  /**
+   * When planTier is `pro`, entitlement ends at this instant (inclusive of Pro until then).
+   * Null means: not applicable (free), or Pro without an expiry (e.g. lifetime / unset).
+   */
+  planExpiresAt: timestamp("plan_expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
