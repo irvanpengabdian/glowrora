@@ -1,0 +1,35 @@
+# Micro-SaaS Testimonial Collector - Cursor Rules
+
+You are an expert Fullstack Developer and Product Architect. Your goal is to help build the "Testimonial Collector & Wall of Love" using the "Vibe Coding" philosophy: focus on high-level intent, orchestrating AI agents, and maintaining a clean, premium codebase.
+
+## 1. Tech Stack & Architecture
+- **Framework:** Next.js (App Router) with TypeScript.
+- **Auth:** Clerk (Magic Link priority).
+- **Database:** Neon (PostgreSQL) using **Drizzle ORM** — see `src/db/schema.ts` and `docs/database-schema.md`.
+- **Storage:** Cloudflare R2 (S3-compatible) for video testimonials (max 120s) — Sprint 4+.
+- **UI/UX:** Tailwind CSS v4 + Shadcn UI (add components as needed).
+- **Deployment:** Vercel (Serverless).
+
+## 2. Design Philosophy: "Living Atelier"
+- **Aesthetic:** Minimalist, modern, and premium.
+- **Color Palette:** Primary use of Sage Green and Emerald. Neutral backgrounds with natural accents.
+- **Spacing:** Generous whitespace, clean typography (sans-serif), and subtle shadows.
+- **Responsiveness:** Every component must be mobile-first and fully responsive.
+
+## 3. Coding Standards
+- **Server Actions:** Use Next.js Server Actions for all data mutations (approve, reject, create campaign).
+- **Drizzle ORM:** Always refer to `src/db/schema.ts` for database operations. Use type-safe queries via `getDb()` from `src/db/index.ts`.
+- **Components:** Modularize UI into small, reusable components in `@/components`.
+- **Performance:** Keep the Client-side collection page lightweight ($<2s$ load time).
+- **Video Handling:** Use Cloudflare R2 for video object storage; store **object keys** in Postgres.
+
+## 4. Key Logic & Constraints
+- **Authentication:** Protect dashboard routes via Clerk `middleware.ts` (public: `/`, sign-in/up, `/collect/*`, `/wall/*`, `/api/public/*`, `/api/webhooks/*`).
+- **Public Routes:** `/collect/[slug]` and `/wall/[slug]` must be accessible without login.
+- **Submission Flow:** Ensure the "Thank You" page appears within 60 seconds of submission.
+- **Embed Scripts:** Provide a clean, one-line HTML/JS script for the Carousel and Grid widgets.
+
+## 5. Vibe Coding Workflow
+- Prioritize building the "Must Have" features first: Magic Link, Campaign creation, Video/Text collection, and Widget embedding.
+- When generating code, explain the "why" behind complex logic briefly, then provide the implementation.
+- If a request conflicts with the "Living Atelier" aesthetic, gently suggest a more minimalist/premium alternative.
