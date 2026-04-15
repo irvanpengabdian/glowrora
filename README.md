@@ -1,4 +1,4 @@
-# Trustify
+# Glowrora
 
 Testimonial collector and Wall of Love — Next.js (App Router), Clerk, Neon, Drizzle, Cloudflare R2 (media in later sprints).
 
